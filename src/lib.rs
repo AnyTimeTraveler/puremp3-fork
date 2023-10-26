@@ -13,6 +13,22 @@
 //! }
 //! ```
 
+#![cfg_attr(feature = "no_std", no_std)]
+#![cfg_attr(feature = "no_std", feature(error_in_core))]
+
+#[cfg(feature = "no_std")]
+extern crate alloc;
+
+#[cfg(feature = "no_std")]
+use core::iter;
+
+#[cfg(feature = "no_std")]
+use no_std_io::io::Read;
+#[cfg(not(feature = "no_std"))]
+use std::io::Read;
+#[cfg(not(feature = "no_std"))]
+use std::iter;
+
 mod decoder;
 mod error;
 mod huffman;
@@ -27,7 +43,6 @@ pub use crate::types::{
     BitRate, Channels, Emphasis, FrameHeader, MpegLayer, MpegVersion, SampleRate,
 };
 
-use std::io::Read;
 
 /// Convenience method to decode an MP3.
 /// Returns the first frame header found in the MP3, and an `Iterator` that
@@ -46,7 +61,7 @@ pub fn read_mp3<R: Read>(
     let mut frame = decoder.next_frame()?;
     let header = frame.header.clone();
     let mut i = 0;
-    let iter = std::iter::from_fn(move || {
+    let iter = iter::from_fn(move || {
         if i >= frame.num_samples {
             i = 0;
             frame = if let Ok(frame) = decoder.next_frame() {
@@ -102,7 +117,7 @@ impl<R: Read> Mp3Decoder<R> {
     ///
     /// If you wish to inspect any errors, Use `next_frame` instead.
     pub fn frames(mut self) -> impl Iterator<Item = Frame> {
-        std::iter::from_fn(move || self.next_frame().ok())
+        iter::from_fn(move || self.next_frame().ok())
     }
 
     /// Decodes the next MP3 `Frame` in the stream.

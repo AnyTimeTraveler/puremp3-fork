@@ -1,5 +1,12 @@
 ///! Error types related to MP3 decoding.
-use std::{fmt, io};
+
+#[cfg(feature = "no_std")]
+use no_std_io::io;
+
+#[cfg(feature = "no_std")]
+use core::{fmt, error};
+#[cfg(not(feature = "no_std"))]
+use std::{fmt, io, error};
 
 /// Error that can be raised during MP3 decoding.
 #[derive(Debug)]
@@ -20,11 +27,11 @@ impl fmt::Display for Error {
     }
 }
 
-impl std::error::Error for Error {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+impl error::Error for Error {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
             Error::Mp3Error(e) => Some(e),
-            Error::IoError(e) => Some(e),
+            Error::IoError(e) => Some(error::Error::e),
         }
     }
 }
@@ -47,7 +54,7 @@ impl fmt::Display for Mp3Error {
     }
 }
 
-impl std::error::Error for Mp3Error {}
+impl error::Error for Mp3Error {}
 
 impl From<Mp3Error> for Error {
     fn from(error: Mp3Error) -> Self {

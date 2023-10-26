@@ -2,6 +2,11 @@ use crate::error::Error;
 use crate::tables::*;
 use crate::types::{BlockType, FrameHeader, GranuleChannelSideInfo};
 use bitstream_io::{BigEndian, BitReader};
+
+
+#[cfg(feature = "no_std")]
+use no_std_io::io::Read;
+#[cfg(not(feature = "no_std"))]
 use std::io::Read;
 
 pub fn read_huffman<R: Read>(

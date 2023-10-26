@@ -1,8 +1,12 @@
 use crate::error::{Error, Mp3Error};
 use crate::tables::{LFS_INTENSITY_STEREO_TABLE, LFS_TABLE, SCALE_FACTOR_SIZES};
 use crate::types::*;
-use bitstream_io::{BigEndian, BitReader};
+use bitstream_io::{BigEndian, BitReader, BitRead};
 use byteorder::ReadBytesExt;
+
+#[cfg(feature = "no_std")]
+use no_std_io::io::Read;
+#[cfg(not(feature = "no_std"))]
 use std::io::Read;
 
 pub fn read_frame_header<R: Read>(mut data: R) -> Result<FrameHeader, Error> {

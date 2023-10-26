@@ -1,5 +1,10 @@
 //! Types and data structures used by the MP3 decoder.
 
+#[cfg(feature = "no_std")]
+use core::fmt;
+#[cfg(not(feature = "no_std"))]
+use std::fmt;
+
 /// The maximum number of channels supported in an MP3.
 pub const MAX_CHANNELS: usize = 2;
 
@@ -328,8 +333,8 @@ impl Default for MainDataChannel {
     }
 }
 
-impl std::fmt::Debug for MainDataChannel {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl fmt::Debug for MainDataChannel {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "MainDataChannel")
     }
 }
